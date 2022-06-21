@@ -1,24 +1,19 @@
 const axios = require("axios");
 
-const { tsnParse } = require("./tsn");
-const { ukrinformParse } = require("./ukrinform")
-const { censorParse } = require("./censor");
+const { tsnParse } = require("../sites/tsn");
+const { censorParse } = require("../sites/censor");
 
-let urlSites = {'https://tsn.ua/': tsnParse,
-				'https://www.ukrinform.ua/block-publications' : ukrinformParse,
-				'https://censor.net/ua/news/all': censorParse};
+let urlSites = {'https://tsn.ua/ru': tsnParse,
+				'https://censor.net/ru/news/all': censorParse};
 
 let allNewsBlock = [];
 
 exports.GetNews = async function() {
-	if (allNewsBlock.length < 2) {
-		for (var key in urlSites) {
+	for (var key in urlSites) {
 		await axios.get(key)
 			.then(response => urlSites[key](response, allNewsBlock, getCode))
-			.catch((e) => catchError(e));
-		}
+			.catch((e) => console.log(e));
 	}
-	console.log(`All news: ${allNewsBlock.length}`)
 };
 
 exports.getNotPublishNews = function() {
@@ -34,20 +29,12 @@ exports.getNotPublishNews = function() {
 }
 
 exports.clearPublishedNews = function() {
-	let currentLenghArray = allNewsBlock.length;
-	allNewsBlock =  allNewsBlock.filter(news => (news.published == false))
-	console.log(`All news cleaned: ${currentLenghArray - allNewsBlock.length}`);
+	let currentLength = allNewsBlock.length;
+	allNewsBlock =  allNewsBlock.filter(news => (news.published == false));
+	console.log(`Clear ${currentLength- allNewsBlock.length} articles`);
 }
 
 exports.allNewsBlock = allNewsBlock;
-
-function catchError(error) {
-	if (error.name == "AxiosError") {
-		console.log("Status 403! Can't get data content");
-		return;
-	}
-	console.log(error);
-}
 
 function getCode(text) {
 	return text.length * text.split(' ').length * text.split('а').length;

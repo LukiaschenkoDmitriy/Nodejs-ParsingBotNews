@@ -12,7 +12,7 @@ exports.Channels = Server.define('channels', {
     title: {type: Sequelize.STRING},
     type: {type: Sequelize.STRING},
     status: {type: Sequelize.STRING}},
-    {timestamps: false})
+	{timestamps: false})
 
 exports.cleardatabase = function(accept = "") {
     if (accept == "I really want clear database") {

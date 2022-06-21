@@ -141,6 +141,7 @@ exports.ControlFunctionBot = class {
 				});
 
 				publishNews.published = true;
+				console.log("All news: " + allNewsBlock.length);
 			});
 		})
 	}
